@@ -105,6 +105,14 @@ addBookModal.addEventListener('click', e => {
 
 const form = document.querySelector('form');
 form.addEventListener('submit', e => {
+    // Form Validation
+    if (!form.checkValidity()) {
+        e.preventDefault();
+        showError();
+        
+        return;
+    }
+    
     e.preventDefault(); // Need to learn more in detail about this method
 
     const formData = new FormData(form); // Create FormData object from the form
@@ -120,11 +128,42 @@ form.addEventListener('submit', e => {
     addBookToLibrary(book.title, book.author, book.pages, book.read);
     displayAllBooksFromLibrary();
     form.reset();
+    resetError();
     dialog.close();
 })
 
 const closeDialog = document.querySelector('#close-dialog');
-closeDialog.addEventListener('click', e => dialog.close())
+closeDialog.addEventListener('click', e => {
+    form.reset();
+    resetError();
+    dialog.close();
+})
 
+// Form Validation
+const title = document.querySelector('#title');
+const author = document.querySelector('#author');
+const pages = document.querySelector('#pages');
 
-// TODO: toggle button to change read status on each book displayed
+const span = document.querySelectorAll('span');
+// title.addEventListener('input', )
+
+    // Show errors for all inputs
+function showError() {
+    console.log('showError called');
+    if (title.validity.valueMissing) {
+        span[0].textContent = 'Please add a book title';
+        span[0].className = 'error active';
+    } else if (author.validity.valueMissing) {
+        span[1].textContent = 'Please add an author';
+        span[1].className = 'error active';
+    } else if (pages.validity.valueMissing || pages.validity.rangeOverflow || pages.validity.rangeUnderflow) {
+        span[2].textContent = 'Pages must be from 100 to 1000 only';
+        span[2].className = 'error active';
+    }
+}
+
+function resetError() {
+    span.forEach(errorSpan => {
+        errorSpan.textContent = '';
+    })
+}
